@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('analytics', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('sample_id');
+            $table->foreign('sample_id')->references('id')->on('samples');
+            $table->unsignedBigInteger('instrument_id');
+            $table->foreign('instrument_id')->references('id')->on('instruments');
+            $table->datetime('scan_in')->nullable();
+            $table->datetime('scan_out')->nullable();
+            $table->unsignedBigInteger('pic');
+            $table->foreign('pic')->references('id')->on('users');
             $table->timestamps();
         });
     }

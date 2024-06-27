@@ -51,4 +51,9 @@ class Sample extends Model
     {
         return $this->hasOne(ParameterTesting::class, 'id', 'parameter_testing_id');
     }
+
+    function Analytics()
+    {
+        return $this->hasMany(Analytic::class, 'sample_id', 'id')->orderBy('id', 'DESC');
+    }
 }

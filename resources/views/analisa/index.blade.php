@@ -6,17 +6,6 @@
 
 @section('content')
     <div class="container-fluid">
-        <div class="d-sm-flex align-items-center mb-4">
-            <button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal"
-                data-target="#scanInModal">
-                <i class="fas fa-arrow-down fa-sm text-white-50"></i>
-                Scan in Sample
-            </button>
-            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm ml-3">
-                <i class="fas fa-arrow-up fa-sm text-white-50"></i>
-                Scan out Sample
-            </a>
-        </div>
 
         <div class="row">
             <!-- Earnings (Monthly) Card Example -->
@@ -56,62 +45,97 @@
             </div>
         </div>
 
+        <div class="d-sm-flex align-items-center mb-4">
+            <button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal"
+                data-target="#scanInModal">
+                <i class="fas fa-arrow-down fa-sm text-white-50"></i>
+                Scan in Sample
+            </button>
+        </div>
+
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Barcode</th>
-                            <th>Type</th>
-                            <th>No Sample</th>
-                            <th>No Batch</th>
-                            <th>Jumlah</th>
-                            <th>Tanggal Terima</th>
-                            <th>Tenggat Testing</th>
-                            <th>Action</th>
+                            <th>Sample</th>
+                            <th>History</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th>Barcode</th>
-                            <th>Type</th>
-                            <th>No Sample</th>
-                            <th>No Batch</th>
-                            <th>Jumlah</th>
-                            <th>Tanggal Terima</th>
-                            <th>Tenggat Testing</th>
-                            <th>Action</th>
+                            <th>Sample</th>
+                            <th>History</th>
+                            <th></th>
                         </tr>
                     </tfoot>
                     <tbody>
-                        {{-- @foreach ($samples as $sample) --}}
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                <button class="btn btn-info btn-sm" type="button" data-toggle="modal"
-                                    data-target="#showModal">
-                                    <i class="fas fa-fw fa-eye"></i>
-                                </button>
-                                <button class="btn btn-warning btn-sm" type="button" data-toggle="modal"
-                                    data-target="#updateModal">
-                                    <i class="fas fa-fw fa-pen"></i>
-                                </button>
-                                <form action="" method="post" class="d-inline">
-                                    @csrf
-                                    <button onclick="return confirm('Hapus data?')" type="submit"
-                                        class="btn btn-danger btn-sm">
-                                        <i class="fas fa-fw fa-trash"></i>
+                        @foreach ($analytics as $analytic)
+                            <tr>
+                                <td>{{ $analytic->type }} - {{ $analytic->no_sample }}</td>
+                                <td>
+                                    <button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
+                                        data-toggle="modal" data-target="#historySample{{ $analytic->id }}">
+                                        <i class="fas fa-book fa-sm text-white-50"></i>
+                                        History
                                     </button>
-                                </form>
-                            </td>
-                        </tr>
-                        {{-- @endforeach --}}
+                                </td>
+                                <td>
+                                    <a href="#"
+                                        class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm ml-3">
+                                        <i class="fas fa-barcode fa-sm text-white-50"></i>
+                                        Scan Out
+                                    </a>
+                                </td>
+                            </tr>
+
+                            <div class="modal fade" id="historySample{{ $analytic->id }}" tabindex="-1" role="dialog"
+                                aria-labelledby="historySample{{ $analytic->id }}" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="historySample{{ $analytic->id }}">History
+                                            </h5>
+                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">x</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <ul>
+                                                @foreach ($analytic->Analytics as $history)
+                                                    <li>
+                                                        @if ($history->scan_in)
+                                                            <b>{{ $history->scan_in }}</b> by {{ $history->PIC->name }}
+                                                            @if ($history->status == 'In Review')
+                                                                <span class="text-warning">
+                                                                    <i>({{ $history->status }})</i>
+                                                                </span>
+                                                            @endif
+                                                            <br>
+                                                            {{ $history->Sample->type }}
+                                                            <span class="fas fa-arrow-right text-success"></span>
+                                                            {{ $history->Instrument->nama_instrument }}
+                                                        @else
+                                                            <b>{{ $history->scan_out }}</b> by {{ $history->PIC->name }}
+                                                            @if ($history->status == 'In Review')
+                                                                <span class="text-warning">
+                                                                    <i>({{ $history->status }})</i>
+                                                                </span>
+                                                            @endif
+                                                            <br>
+                                                            {{ $history->Instrument->nama_instrument }}
+                                                            <span class="fas fa-arrow-right text-danger"></span>
+                                                            {{ $history->Sample->type }}
+                                                        @endif
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -138,18 +162,23 @@
                             </div>
                             <div class="mb-4">
                                 <label class="form-label">No Sample</label>
+                                <input type="hidden" name="id_sample" id="sampleId">
                                 <div class="row">
                                     <div class="col-3">
-                                        <input readonly class="form-control" name="sampleIDSection1" id="sampleIDSection1">
+                                        <input readonly class="form-control" name="sampleIDSection1"
+                                            id="sampleIDSection1">
                                     </div>
                                     <div class="col-3">
-                                        <input readonly class="form-control" name="sampleIDSection2" id="sampleIDSection2">
+                                        <input readonly class="form-control" name="sampleIDSection2"
+                                            id="sampleIDSection2">
                                     </div>
                                     <div class="col-3">
-                                        <input readonly class="form-control" name="sampleIDSection3" id="sampleIDSection3">
+                                        <input readonly class="form-control" name="sampleIDSection3"
+                                            id="sampleIDSection3">
                                     </div>
                                     <div class="col-3">
-                                        <input readonly class="form-control" name="sampleIDSection4" id="sampleIDSection4">
+                                        <input readonly class="form-control" name="sampleIDSection4"
+                                            id="sampleIDSection4">
                                     </div>
                                 </div>
                             </div>
@@ -163,7 +192,8 @@
                             </div>
                             <div class="mb-4">
                                 <label class="form-label">Tanggal sample masuk</label>
-                                <input readonly class="form-control" name="sampleDateIn" type="datetime-local" id="sampleDateIn">
+                                <input readonly class="form-control" name="sampleDateIn" type="datetime-local"
+                                    id="sampleDateIn">
                             </div>
                             <div class="mb-4">
                                 <label class="form-label">Parameter uji</label>
@@ -171,6 +201,7 @@
                             </div>
                         </div>
                         <div id="instrumentData" style="display: none">
+                            <input type="hidden" name="id_instrument" id="idInstrument">
                             <div class="mb-4">
                                 <label class="form-label">No ID Instrument</label>
                                 <input readonly class="form-control" name="instrumentID" id="instrumentID">
@@ -181,14 +212,24 @@
                             </div>
                             <div class="mb-4">
                                 <label class="form-label">Tanggal kalibrasi</label>
-                                <input readonly class="form-control" name="instrumentCalibrate" type="date" id="instrumentCalibrate">
+                                <input readonly class="form-control" name="instrumentCalibrate" type="date"
+                                    id="instrumentCalibrate">
                             </div>
                         </div>
                         <div style="width: 100%; display: none" id="instrumentReader"></div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-success">Submit</button>
+                        <div id="scan_in_button" style="display: none">
+                            <button type="submit" value="scan_in" name="scan_type" class="btn btn-success">
+                                Scan In
+                            </button>
+                        </div>
+                        <div id="scan_out_button" style="display: none">
+                            <button type="submit" value="scan_out" name="scan_type" class="btn btn-info">
+                                Scan Out
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -221,7 +262,6 @@
         QrCodeScannerSample.render(onScanSampleSuccess);
 
         function onScanSampleSuccess(decodedText, decodedResult) {
-            console.log('sample')
             $.ajax({
                 url: "/show/sample/analitycs/" + decodedText,
                 type: 'GET',
@@ -233,6 +273,7 @@
                     $('#sampleData').css('display', 'block')
 
                     $('#sampleType').val(data.type)
+                    $('#sampleId').val(data.id)
                     $('#sampleIDSection1').val(no_sample[0])
                     $('#sampleIDSection2').val(no_sample[1])
                     $('#sampleIDSection3').val(no_sample[2])
@@ -242,7 +283,17 @@
                     $('#sampleDateIn').val(data.tanggal_terima)
                     $('#sampleParameterUji').val(data.parameter_testing.parameter_uji)
 
-                    $('#instrumentReader').css('display', 'block')
+                    if (data.analytics.length > 0) {
+                        if (data.analytics[0].scan_in) {
+                            onScanInstrumentSuccess(data.analytics[0].instrument.qr_code, null, data.analytics)
+                            $('#scan_out_button').css('display', 'block')
+                            $('#scan_in_button').css('display', 'none')
+                        } else {
+                            $('#instrumentReader').css('display', 'block')
+                        }
+                    } else {
+                        $('#instrumentReader').css('display', 'block')
+                    }
                     QrCodeScannerSample.clear()
                 }
             });
@@ -255,20 +306,24 @@
             });
         QrCodeScannerInstrument.render(onScanInstrumentSuccess);
 
-        function onScanInstrumentSuccess(decodedText, decodedResult) {
-            console.log('instrument')
-            console.log(`Scan result: ${decodedText}`, decodedResult);
+        function onScanInstrumentSuccess(decodedText, decodedResult, sample) {
             $.ajax({
                 url: "/show/instrument/analitycs/" + decodedText,
                 type: 'GET',
                 success: function(res) {
                     var data = res.data
 
+                    $('#idInstrument').val(data.id)
                     $('#instrumentReader').css('display', 'none')
                     $('#instrumentID').val(data.id_instrument)
                     $('#instrumentName').val(data.nama_instrument)
                     $('#instrumentCalibrate').val(data.tanggal_kalibrasi)
                     $('#instrumentData').css('display', 'block')
+
+                    if (!sample) {
+                        console.log('wasu tenant')
+                        $('#scan_in_button').css('display', 'block')
+                    }
 
                     QrCodeScannerInstrument.clear()
                 }

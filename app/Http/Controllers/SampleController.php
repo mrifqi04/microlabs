@@ -10,7 +10,6 @@ use App\Models\Sample;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class SampleController extends Controller
 {
@@ -61,11 +60,8 @@ class SampleController extends Controller
     public function update($id, Request $request)
     {
         $sample = Sample::find($id);
-        $parameter = ParameterTesting::find($sample->parameter_testing_id);
-
         $sample->update($request->all());
         $sample->no_sample = $request->section1 . '-' . $request->section2 . '-' . $request->section3 . '-' . $request->section4;
-        $sample->tenggat_testing = Carbon::now()->addDay($parameter->leadtime);
         $sample->save();
 
         Alert::success('Berhasil', 'Berhasil update sample');
