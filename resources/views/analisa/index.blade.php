@@ -59,6 +59,7 @@
                     <thead>
                         <tr>
                             <th>Sample</th>
+                            <th>Leadtime</th>
                             <th>History</th>
                             <th></th>
                         </tr>
@@ -66,6 +67,7 @@
                     <tfoot>
                         <tr>
                             <th>Sample</th>
+                            <th>Leadtime</th>
                             <th>History</th>
                             <th></th>
                         </tr>
@@ -74,6 +76,7 @@
                         @foreach ($analytics as $analytic)
                             <tr>
                                 <td>{{ $analytic->type }} - {{ $analytic->no_sample }}</td>
+                                <td> {{ Date("d M Y - H:i", strtotime($analytic->tenggat_testing)) }}</td>
                                 <td>
                                     <button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
                                         data-toggle="modal" data-target="#historySample{{ $analytic->id }}">
@@ -85,7 +88,7 @@
                                     <a href="#"
                                         class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm ml-3">
                                         <i class="fas fa-barcode fa-sm text-white-50"></i>
-                                        Scan Out
+                                        Scan Done
                                     </a>
                                 </td>
                             </tr>
