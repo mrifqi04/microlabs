@@ -49,8 +49,8 @@
                             @foreach ($instruments as $instrument)
                                 <tr>
                                     <td>
-                                        <img src="{{ url('/storage/img/qr-code/instrument/' . $instrument->qr_code . '.png') }}"
-                                            alt="instrument-{{ $instrument->id }}" width="100">
+                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data={{ $instrument->qr_code }}"
+                                        alt="sample-{{ $instrument->id }}" width="100">
                                     </td>
                                     <td>{{ $instrument->id_instrument }}</td>
                                     <td>{{ $instrument->nama_instrument }}</td>

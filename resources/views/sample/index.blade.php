@@ -53,7 +53,7 @@
                             @foreach ($samples as $sample)
                                 <tr>
                                     <td>
-                                        <img src="{{ url('/storage/img/qr-code/sample/' . $sample->qr_code . '.png') }}"
+                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data={{ $sample->qr_code }}"
                                             alt="sample-{{ $sample->id }}" width="100">
                                     </td>
                                     <td>{{ $sample->type }}</td>
