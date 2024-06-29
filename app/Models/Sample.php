@@ -11,7 +11,7 @@ class Sample extends Model
     use HasFactory;
 
     protected $fillable = [
-        'type',
+        'type_id',
         'no_sample',
         'no_batch',
         'deskripsi_sample',
@@ -39,5 +39,15 @@ class Sample extends Model
     function Analytics()
     {
         return $this->hasMany(Analytic::class, 'sample_id', 'id')->orderBy('id', 'DESC');
+    }
+
+    function PIC()
+    {
+        return $this->hasOne(User::class, 'id', 'pic');
+    }
+
+    function TypeTesting()
+    {
+        return $this->hasOne(TypeTesting::class, 'id', 'type_id');
     }
 }

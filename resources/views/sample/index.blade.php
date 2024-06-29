@@ -28,24 +28,26 @@
                         <thead>
                             <tr>
                                 <th>Barcode</th>
+                                <th>Desc</th>
                                 <th>Type</th>
                                 <th>No Sample</th>
                                 <th>No Batch</th>
                                 <th>Jumlah</th>
                                 <th>Tanggal Terima</th>
-                                <th>Tenggat Testing</th>
+                                <th>PIC</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tfoot>
                             <tr>
                                 <th>Barcode</th>
+                                <th>Desc</th>
                                 <th>Type</th>
                                 <th>No Sample</th>
                                 <th>No Batch</th>
                                 <th>Jumlah</th>
                                 <th>Tanggal Terima</th>
-                                <th>Tenggat Testing</th>
+                                <th>PIC</th>
                                 <th>Action</th>
                             </tr>
                         </tfoot>
@@ -56,12 +58,13 @@
                                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data={{ $sample->qr_code }}"
                                             alt="sample-{{ $sample->id }}" width="100">
                                     </td>
-                                    <td>{{ $sample->type }}</td>
+                                    <td>{{ $sample->deskripsi_sample }}</td>
+                                    <td>{{ $sample->TypeTesting->type }}</td>
                                     <td>{{ $sample->no_sample }}</td>
                                     <td>{{ $sample->no_batch }}</td>
                                     <td>{{ $sample->jumlah_sampel }}</td>
                                     <td>{{ Date('d-m-Y, H:i', strtotime($sample->tanggal_terima)) }}</td>
-                                    <td>{{ Date('d-m-Y, H:i', strtotime($sample->tenggat_testing)) }}</td>
+                                    <td>{{ $sample->PIC->name }}</td>
                                     <td>
                                         <button class="btn btn-info btn-sm" type="button" data-toggle="modal"
                                             data-target="#showModal{{ $sample->id }}">
@@ -97,7 +100,7 @@
                                             <div class="modal-body">
                                                 <div class="mb-4">
                                                     <label for="">Type</label>
-                                                    <input class="form-control" value="{{ $sample->type }}" readonly
+                                                    <input class="form-control" value="{{ $sample->TypeTesting->type }}" readonly
                                                         name="no_batch" type="text">
                                                 </div>
                                                 <div class="mb-4">
@@ -110,17 +113,9 @@
                                                             <input class="form-control" value="{{ $no_sample[0] }}"
                                                                 readonly name="section1" type="text">
                                                         </div>
-                                                        <div class="col-2">
+                                                        <div class="col-10">
                                                             <input class="form-control" value="{{ $no_sample[1] }}"
-                                                                readonly name="section2" type="text">
-                                                        </div>
-                                                        <div class="col-2">
-                                                            <input class="form-control" value="{{ $no_sample[2] }}"
-                                                                readonly name="section3" type="text">
-                                                        </div>
-                                                        <div class="col-auto">
-                                                            <input class="form-control" value="{{ $no_sample[3] }}"
-                                                                readonly name="section4" type="text">
+                                                                name="section2" type="text" readonly>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -155,6 +150,12 @@
                                                     <label for="">Parameter Uji</label>
                                                     <input class="form-control"
                                                         value="{{ $sample->ParameterTesting->parameter_uji }}" readonly
+                                                        name="no_batch" type="text">
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label for="">PIC</label>
+                                                    <input class="form-control"
+                                                        value="{{ $sample->PIC->name }}" readonly
                                                         name="no_batch" type="text">
                                                 </div>
                                             </div>
@@ -308,17 +309,9 @@
                                                                 <input class="form-control" value="{{ $no_sample[0] }}"
                                                                     name="section1" type="text">
                                                             </div>
-                                                            <div class="col-2">
+                                                            <div class="col-10">
                                                                 <input class="form-control" value="{{ $no_sample[1] }}"
                                                                     name="section2" type="text">
-                                                            </div>
-                                                            <div class="col-2">
-                                                                <input class="form-control" value="{{ $no_sample[2] }}"
-                                                                    name="section3" type="text">
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                <input class="form-control" value="{{ $no_sample[3] }}"
-                                                                    name="section4" type="text">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -399,7 +392,7 @@
                     @csrf
                     <div class="modal-body">
                         <div class="mb-4">
-                            <div class="row mb-3">
+                            {{-- <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-check">
                                         <input class="form-check-input" value="Obat Jadi" type="radio" required
@@ -496,22 +489,28 @@
                                     </div>
                                 </div>
                                 <div class="col"></div>
-                            </div>
+                            </div> --}}
+                            <select name="type" class="form-control" id="type_sample">
+                                <option selected disabled>--- Select ----</option>
+                                @foreach ($types as $type)
+                                    <option value="{{ $type->type_code }}">{{ $type->type }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="mb-4">
                             <label for="">No ID Sample</label>
                             <div class="row">
                                 <div class="col-2">
-                                    <input class="form-control" required name="section1" type="text">
+                                    <input class="form-control" required name="section1" type="text" value="{{ Date('Y', strtotime(\Carbon\Carbon::now())) }}" readonly>
                                 </div>
                                 <div class="col-2">
-                                    <input class="form-control" required name="section2" type="text">
+                                    <input class="form-control" required name="section2" type="text" id="no_sample_section_2" readonly>
                                 </div>
                                 <div class="col-2">
                                     <input class="form-control" required name="section3" type="text">
                                 </div>
                                 <div class="col-auto">
-                                    <input class="form-control" required name="section4" type="text">
+                                    <input class="form-control" required name="section4" type="text" value="{{ str_pad(count($samples) + 1, 4, 0, STR_PAD_LEFT) }}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -527,9 +526,9 @@
                             <label for="">Waktu di Terima QC</label>
                             <input class="form-control" required name="tanggal_terima" type="datetime-local">
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-4" style="display: none" id="jumlah_sampel">
                             <label for="">Jumlah Sample</label>
-                            <input class="form-control" required name="jumlah_sampel" min="1" type="number">
+                            <input class="form-control" name="jumlah_sampel" min="1" type="number">
                         </div>
                         <div class="mb-4">
                             <label for="">Parameter Uji</label>
@@ -565,4 +564,17 @@
 
     <!-- Page level custom scripts -->
     <script src="{{ asset('assets/js/demo/datatables-demo.js') }}"></script>
+
+    <script>
+        $('#type_sample').on('change', function() {
+            const value = $(this).val();
+            console.log(value);
+            $('#no_sample_section_2').val(value)
+            if (value === 'EM') {
+                $('#jumlah_sampel').css('display', 'block')
+            } else {
+                $('#jumlah_sampel').css('display', 'none')
+            }
+        })
+    </script>
 @endsection
