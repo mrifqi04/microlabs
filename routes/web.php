@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AnalyticController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\InstrumentController;
 use App\Http\Controllers\ParameterTestingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SampleController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +32,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/users', [UserController::class, 'index'])->name('users');
+    Route::post('/user/{id}', [UserController::class, 'update'])->name('updateUser');
+    Route::post('/delete/user/{id}', [UserController::class, 'destroy'])->name('deleteUser');
+    Route::post('/users', [RegisteredUserController::class, 'store'])->name('registerUser');
 
     Route::get('/parameters-testing', [ParameterTestingController::class, 'index'])->name('parametersTesting');
     Route::post('/parameters-testing', [ParameterTestingController::class, 'store'])->name('storeParametersTesting');
