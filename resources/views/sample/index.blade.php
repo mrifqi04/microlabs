@@ -533,9 +533,9 @@
                         </div>
                         <div class="mb-4">
                             <label for="">Parameter Uji</label>
-                            <select class="form-control" name="" id="">
+                            <select class="form-control" name="parameter_uji" id="">
                                 @foreach ($parameters as $parameter)
-                                    <option value="{{ $parameter->id }}" value="">
+                                    <option value="{{ $parameter->id }}">
                                         {{ $parameter->parameter_uji }}
                                     </option>
                                 @endforeach
