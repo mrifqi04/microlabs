@@ -71,9 +71,11 @@
                                             data-target="#updateModal{{ $sample->id }}">
                                             <i class="fas fa-fw fa-pen"></i>
                                         </button>
-                                        <form action="{{ route('deleteSample', $sample->id) }}" method="post" class="d-inline">
+                                        <form action="{{ route('deleteSample', $sample->id) }}" method="post"
+                                            class="d-inline">
                                             @csrf
-                                            <button onclick="return confirm('Hapus data?')" type="submit" class="btn btn-danger btn-sm">
+                                            <button onclick="return confirm('Hapus data?')" type="submit"
+                                                class="btn btn-danger btn-sm">
                                                 <i class="fas fa-fw fa-trash"></i>
                                             </button>
                                         </form>
@@ -151,7 +153,8 @@
                                                 </div>
                                                 <div class="mb-4">
                                                     <label for="">Parameter Uji</label>
-                                                    <input class="form-control" value="{{ $sample->ParameterTesting->parameter_uji }}" readonly
+                                                    <input class="form-control"
+                                                        value="{{ $sample->ParameterTesting->parameter_uji }}" readonly
                                                         name="no_batch" type="text">
                                                 </div>
                                             </div>
@@ -530,19 +533,13 @@
                         </div>
                         <div class="mb-4">
                             <label for="">Parameter Uji</label>
-                            <div class="row">
+                            <select class="form-control" name="" id="">
                                 @foreach ($parameters as $parameter)
-                                    <div class="col-4 mb-2">
-                                        <div class="form-check">
-                                            <input class="form-check-input" value="{{ $parameter->id }}" type="radio"
-                                                required name="parameter_uji" id="flexRadioDefault1">
-                                            <label class="form-check-label">
-                                                {{ $parameter->parameter_uji }}
-                                            </label>
-                                        </div>
-                                    </div>
+                                    <option value="{{ $parameter->id }}" value="">
+                                        {{ $parameter->parameter_uji }}
+                                    </option>
                                 @endforeach
-                            </div>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
