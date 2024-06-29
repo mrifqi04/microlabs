@@ -33,10 +33,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/users', [UserController::class, 'index'])->name('users');
-    Route::post('/user/{id}', [UserController::class, 'update'])->name('updateUser');
-    Route::post('/delete/user/{id}', [UserController::class, 'destroy'])->name('deleteUser');
-    Route::post('/users', [RegisteredUserController::class, 'store'])->name('registerUser');
+    Route::group(['middleware' => ['SuperAdmin', 'Administrator']], function() {
+        Route::get('/users', [UserController::class, 'index'])->name('users');
+        Route::post('/user/{id}', [UserController::class, 'update'])->name('updateUser');
+        Route::post('/delete/user/{id}', [UserController::class, 'destroy'])->name('deleteUser');
+        Route::post('/users', [RegisteredUserController::class, 'store'])->name('registerUser');
+    });
 
     Route::get('/parameters-testing', [ParameterTestingController::class, 'index'])->name('parametersTesting');
     Route::post('/parameters-testing', [ParameterTestingController::class, 'store'])->name('storeParametersTesting');
