@@ -74,14 +74,16 @@
                                             data-target="#updateModal{{ $sample->id }}">
                                             <i class="fas fa-fw fa-pen"></i>
                                         </button>
-                                        <form action="{{ route('deleteSample', $sample->id) }}" method="post"
-                                            class="d-inline">
-                                            @csrf
-                                            <button onclick="return confirm('Hapus data?')" type="submit"
-                                                class="btn btn-danger btn-sm">
-                                                <i class="fas fa-fw fa-trash"></i>
-                                            </button>
-                                        </form>
+                                        @if (Auth::user()->role == 'SuperAdmin' || Auth::user()->role == 'Administrator')
+                                            <form action="{{ route('deleteSample', $sample->id) }}" method="post"
+                                                class="d-inline">
+                                                @csrf
+                                                <button onclick="return confirm('Hapus data?')" type="submit"
+                                                    class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-fw fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
 
