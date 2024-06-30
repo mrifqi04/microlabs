@@ -487,7 +487,7 @@
                 }
             });
             $('#no_sample_section_2').val(value)
-            if (value === 'EM') {
+            if (value === 'BEM') {
                 $('#jumlah_sampel').css('display', 'block')
             } else {
                 $('#jumlah_sampel').css('display', 'none')
