@@ -85,4 +85,11 @@ class SampleController extends Controller
 
         return redirect()->back();
     }
+
+    public function countSample($id)
+    {
+        $samples = Sample::where('type_id', $id)->count();
+
+        return response()->json($samples);
+    }
 }

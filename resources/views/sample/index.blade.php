@@ -100,8 +100,8 @@
                                             <div class="modal-body">
                                                 <div class="mb-4">
                                                     <label for="">Type</label>
-                                                    <input class="form-control" value="{{ $sample->TypeTesting->type }}" readonly
-                                                        name="no_batch" type="text">
+                                                    <input class="form-control" value="{{ $sample->TypeTesting->type }}"
+                                                        readonly name="no_batch" type="text">
                                                 </div>
                                                 <div class="mb-4">
                                                     <label for="">No ID Sample</label>
@@ -154,8 +154,7 @@
                                                 </div>
                                                 <div class="mb-4">
                                                     <label for="">PIC</label>
-                                                    <input class="form-control"
-                                                        value="{{ $sample->PIC->name }}" readonly
+                                                    <input class="form-control" value="{{ $sample->PIC->name }}" readonly
                                                         name="no_batch" type="text">
                                                 </div>
                                             </div>
@@ -392,108 +391,11 @@
                     @csrf
                     <div class="modal-body">
                         <div class="mb-4">
-                            {{-- <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" value="Obat Jadi" type="radio" required
-                                            name="type">
-                                        <label class="form-check-label">
-                                            Obat Jadi
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" value="Studi & Validasi" type="radio" required
-                                            name="type">
-                                        <label class="form-check-label">
-                                            Studi & Validasi
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" value="Toll Out" type="radio" required
-                                            name="type">
-                                        <label class="form-check-label">
-                                            Toll Out
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" value="EM" type="radio" required
-                                            name="type">
-                                        <label class="form-check-label">
-                                            EM
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" value="Raw Material" type="radio" required
-                                            name="type">
-                                        <label class="form-check-label">
-                                            Raw Material
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" value="FPP" type="radio" required
-                                            name="type">
-                                        <label class="form-check-label">
-                                            FPP
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" value="VMA" type="radio" required
-                                            name="type">
-                                        <label class="form-check-label">
-                                            VMA
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col"></div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" value="Packaging Material" type="radio"
-                                            required name="type">
-                                        <label class="form-check-label">
-                                            Packaging Material
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" value="Stabilita" type="radio" required
-                                            name="type">
-                                        <label class="form-check-label">
-                                            Stabilita
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" value="GPT" type="radio" required
-                                            name="type">
-                                        <label class="form-check-label">
-                                            GPT
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col"></div>
-                            </div> --}}
                             <select name="type" class="form-control" id="type_sample">
                                 <option selected disabled>--- Select ----</option>
                                 @foreach ($types as $type)
-                                    <option value="{{ $type->type_code }}">{{ $type->type }}</option>
+                                    <option data-id={{ $type->id }} value="{{ $type->type_code }}">
+                                        {{ $type->type }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -501,16 +403,19 @@
                             <label for="">No ID Sample</label>
                             <div class="row">
                                 <div class="col-2">
-                                    <input class="form-control" required name="section1" type="text" value="{{ Date('Y', strtotime(\Carbon\Carbon::now())) }}" readonly>
+                                    <input class="form-control" required name="section1" type="text"
+                                        value="{{ Date('Y', strtotime(\Carbon\Carbon::now())) }}" readonly>
                                 </div>
                                 <div class="col-2">
-                                    <input class="form-control" required name="section2" type="text" id="no_sample_section_2" readonly>
+                                    <input class="form-control" required name="section2" type="text"
+                                        id="no_sample_section_2" readonly>
                                 </div>
                                 <div class="col-2">
                                     <input class="form-control" required name="section3" type="text">
                                 </div>
                                 <div class="col-auto">
-                                    <input class="form-control" required name="section4" type="text" value="{{ str_pad(count($samples) + 1, 4, 0, STR_PAD_LEFT) }}" readonly>
+                                    <input class="form-control" required name="section4" id="no_sample_section_4"
+                                        type="text" readonly>
                                 </div>
                             </div>
                         </div>
@@ -568,7 +473,17 @@
     <script>
         $('#type_sample').on('change', function() {
             const value = $(this).val();
-            console.log(value);
+            const dataId = $(this).find(':selected').attr('data-id')
+
+            $.ajax({
+                url: "/count-sample/" + dataId,
+                type: 'GET',
+                success: function(res) {
+                    var res = res + 1
+                    const countSample = res.toString();
+                    $('#no_sample_section_4').val(countSample.padStart(4, "0"));
+                }
+            });
             $('#no_sample_section_2').val(value)
             if (value === 'EM') {
                 $('#jumlah_sampel').css('display', 'block')
