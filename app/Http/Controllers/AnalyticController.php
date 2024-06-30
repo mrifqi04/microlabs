@@ -17,7 +17,9 @@ class AnalyticController extends Controller
 {
     public function index()
     {
-        $data['analytics'] = Sample::where('status', 'In Review')->get();
+        $data['analytics'] = Sample::where('status', '!=', 'Pending')->get();
+        $data['inreview_sample'] = Sample::where('status', 'In Review')->count();
+        $data['done_sample'] = Sample::where('status', 'Done')->count();
 
         return view('analisa.index', $data);
     }
@@ -25,7 +27,7 @@ class AnalyticController extends Controller
     public function showSample($qrcode)
     {
         $sample = Sample::where('qr_code', $qrcode)
-            ->with('ParameterTesting')
+            ->with(['ParameterTesting', 'TypeTesting'])
             ->with('Analytics', function ($q) {
                 $q->orderBy('id', 'desc');
                 $q->with('Instrument');
@@ -52,32 +54,37 @@ class AnalyticController extends Controller
         $instrument = Instrument::find($request->id_instrument);
         $sample = Sample::find($request->id_sample);
 
-        if ($instrument->tanggal_rekalibrasi < Carbon::now()->format('Y-m-d')) {
-            Alert::info('info', 'Please recalibrate instrument');
-            return redirect()->back();
-        }
-
         try {
             DB::beginTransaction();
 
-            $analytic = Analytic::create([
-                'sample_id' => $request->id_sample,
-                'instrument_id' => $request->id_instrument,
-                'pic' => Auth::user()->id,
-                'status' => 'In Review'
-            ]);
+            $analytic = new Analytic();
+            $analytic->sample_id = $request->id_sample;
+            $analytic->instrument_id = $request->id_instrument;
+            $analytic->pic = Auth::user()->id;
 
             $parameter = ParameterTesting::find($sample->parameter_testing_id);
 
             if ($request->scan_type == 'scan_in') {
+                if ($instrument->tanggal_rekalibrasi < Carbon::now()->format('Y-m-d')) {
+                    Alert::info('info', 'Please recalibrate instrument');
+                    return redirect()->back();
+                }
                 $analytic->scan_in = Carbon::now();
-                $sample->tenggat_testing = Carbon::now()->addDay($parameter->leadtime);
-            } else {
-                $analytic->scan_out = Carbon::now();
-            }
-            $analytic->save();
+                $analytic->status = 'In Review';
 
-            $sample->status = 'In Review';
+                $sample->status = 'In Review';
+                $sample->tenggat_testing = Carbon::now()->addDay($parameter->leadtime);
+            } elseif ($request->scan_type == 'scan_out') {
+                $analytic->scan_out = Carbon::now();
+                $analytic->status = 'In Review';
+                $sample->status = 'In Review';
+            } elseif ($request->scan_type == 'scan_done') {
+                $analytic->scan_done = Carbon::now();
+                $analytic->status = 'Done';
+                $sample->status = 'Done';
+            }
+
+            $analytic->save();
             $sample->save();
 
             DB::commit();

@@ -27,28 +27,34 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
+                                <th>NIK</th>
                                 <th>Email</th>
                                 <th>Name</th>
                                 <th>Username</th>
-                                <th>No Role</th>
+                                <th>Role</th>
+                                <th>Jabatan</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tfoot>
                             <tr>
+                                <th>NIK</th>
                                 <th>Email</th>
                                 <th>Name</th>
                                 <th>Username</th>
-                                <th>No Role</th>
+                                <th>Role</th>
+                                <th>Jabatan</th>
                                 <th>Action</th>
                             </tr>
                         </tfoot>
                         <tbody>
                             @foreach ($users as $user)
                                 <tr>
+                                    <td>{{ $user->nik }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->username }}</td>
+                                    <td>{{ $user->jabatan }}</td>
                                     <td>{{ $user->role }}</td>
                                     <td>
                                         <button class="btn btn-warning btn-sm" type="button" data-toggle="modal"
@@ -81,6 +87,10 @@
                                                 @csrf
                                                 <div class="modal-body">
                                                     <div class="mb-4">
+                                                        <label for="">NIK</label>
+                                                        <input class="form-control" value="{{ $user->nik }}" required name="nik" type="text">
+                                                    </div>
+                                                    <div class="mb-4">
                                                         <label for="">Name</label>
                                                         <input class="form-control" value="{{ $user->name }}" required name="name" type="text">
                                                     </div>
@@ -92,13 +102,16 @@
                                                         <label for="">Email</label>
                                                         <input class="form-control" value="{{ $user->email }}" required name="email" type="email">
                                                     </div>
-
                                                     <div class="mb-4">
                                                         <label for="">Role</label>
                                                         <select class="form-control" name="role" id="">
                                                             <option  {{ $user->role == 'Administrator' ? 'selected' : '' }} value="Administrator">Administrator</option>
                                                             <option  {{ $user->role == 'Analyst' ? 'selected' : '' }} value="Analyst">Analyst</option>
                                                         </select>
+                                                    </div>
+                                                    <div class="mb-4">
+                                                        <label for="">Jabatan</label>
+                                                        <input class="form-control" value="{{ $user->jabatan }}" required name="jabatan" type="text">
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
@@ -132,6 +145,10 @@
                     @csrf
                     <div class="modal-body">
                         <div class="mb-4">
+                            <label for="">NIK</label>
+                            <input class="form-control" required name="nik" type="text">
+                        </div>
+                        <div class="mb-4">
                             <label for="">Name</label>
                             <input class="form-control" required name="name" type="text">
                         </div>
@@ -157,6 +174,10 @@
                                 <option value="Administrator">Administrator</option>
                                 <option value="Analyst">Analyst</option>
                             </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="">Jabatan</label>
+                            <input class="form-control" required name="jabatan" type="text">
                         </div>
                     </div>
                     <div class="modal-footer">

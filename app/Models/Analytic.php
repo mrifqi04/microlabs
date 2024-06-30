@@ -14,6 +14,7 @@ class Analytic extends Model
         'instrument_id',
         'scan_in',
         'scan_out',
+        'scan_done',
         'pic',
         'status'
     ];

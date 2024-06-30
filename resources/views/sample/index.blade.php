@@ -27,6 +27,7 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
+                                <th>No</th>
                                 <th>Barcode</th>
                                 <th>Desc</th>
                                 <th>Type</th>
@@ -35,11 +36,13 @@
                                 <th>Jumlah</th>
                                 <th>Tanggal Terima</th>
                                 <th>PIC</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tfoot>
                             <tr>
+                                <th>No</th>
                                 <th>Barcode</th>
                                 <th>Desc</th>
                                 <th>Type</th>
@@ -48,15 +51,20 @@
                                 <th>Jumlah</th>
                                 <th>Tanggal Terima</th>
                                 <th>PIC</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </tfoot>
                         <tbody>
-                            @foreach ($samples as $sample)
+                            @foreach ($samples as $key => $sample)
                                 <tr>
+                                    <td>{{ $key + 1 }}</td>
                                     <td>
-                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data={{ $sample->qr_code }}"
-                                            alt="sample-{{ $sample->id }}" width="100">
+                                        <button class="btn btn-info btn-sm" type="button" data-toggle="modal"
+                                            data-target="#showModalImage{{ $sample->id }}">
+                                            <i class="fas fa-barcode fa-sm text-white-50"></i> <br>
+                                            Download Barcode
+                                        </button>
                                     </td>
                                     <td>{{ $sample->deskripsi_sample }}</td>
                                     <td>{{ $sample->TypeTesting->type }}</td>
@@ -66,14 +74,25 @@
                                     <td>{{ Date('d-m-Y, H:i', strtotime($sample->tanggal_terima)) }}</td>
                                     <td>{{ $sample->PIC->name }}</td>
                                     <td>
+                                        @if ($sample->status == 'Pending')
+                                            <span class="badge badge-warning">{{ $sample->status }}</span>
+                                        @endif
+                                        @if ($sample->status == 'In Review')
+                                            <span class="badge badge-info">{{ $sample->status }}</span>
+                                        @endif
+                                        @if ($sample->status == 'Done')
+                                            <span class="badge badge-success">{{ $sample->status }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
                                         <button class="btn btn-info btn-sm" type="button" data-toggle="modal"
                                             data-target="#showModal{{ $sample->id }}">
                                             <i class="fas fa-fw fa-eye"></i>
-                                        </button>
+                                        </button> <br>
                                         <button class="btn btn-warning btn-sm" type="button" data-toggle="modal"
                                             data-target="#updateModal{{ $sample->id }}">
                                             <i class="fas fa-fw fa-pen"></i>
-                                        </button>
+                                        </button> <br>
                                         @if (Auth::user()->role == 'SuperAdmin' || Auth::user()->role == 'Administrator')
                                             <form action="{{ route('deleteSample', $sample->id) }}" method="post"
                                                 class="d-inline">
@@ -86,6 +105,36 @@
                                         @endif
                                     </td>
                                 </tr>
+
+                                <div class="modal fade" id="showModalImage{{ $sample->id }}" tabindex="-1"
+                                    role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Barcode
+                                                    {{ $sample->no_sample }}
+                                                </h5>
+                                                <button class="close" type="button" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">x</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row" id="barcodeSample{{ $sample->qr_code }}">
+                                                    <div class="col">
+                                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data={{ $sample->qr_code }}"
+                                                            alt="" width="100%">
+                                                    </div>
+                                                    <div class="col">
+                                                        <span>test</span>
+                                                    </div>
+                                                </div>
+                                                <a class="btn btn-success btn-sm mt-3"
+                                                    id="downloadElectricBarcode{{ $sample->qr_code }}">Download</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="modal fade" id="showModal{{ $sample->id }}" tabindex="-1" role="dialog"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -184,121 +233,16 @@
                                                 @csrf
                                                 <div class="modal-body">
                                                     <div class="mb-4">
-                                                        <div class="row mb-3">
-                                                            <div class="col">
-                                                                <div class="form-check">
-                                                                    <input
-                                                                        {{ $sample->type === 'Obat Jadi' ? 'checked' : '' }}
-                                                                        class="form-check-input" value="Obat Jadi"
-                                                                        type="radio" required name="type">
-                                                                    <label class="form-check-label">
-                                                                        Obat Jadi
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col">
-                                                                <div class="form-check">
-                                                                    <input
-                                                                        {{ $sample->type === 'Studi & Validasi' ? 'checked' : '' }}
-                                                                        class="form-check-input" value="Studi & Validasi"
-                                                                        type="radio" required name="type">
-                                                                    <label class="form-check-label">
-                                                                        Studi & Validasi
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col">
-                                                                <div class="form-check">
-                                                                    <input
-                                                                        {{ $sample->type === 'Toll Out' ? 'checked' : '' }}
-                                                                        class="form-check-input" value="Toll Out"
-                                                                        type="radio" required name="type">
-                                                                    <label class="form-check-label">
-                                                                        Toll Out
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col">
-                                                                <div class="form-check">
-                                                                    <input {{ $sample->type === 'EM' ? 'checked' : '' }}
-                                                                        class="form-check-input" value="EM"
-                                                                        type="radio" required name="type">
-                                                                    <label class="form-check-label">
-                                                                        EM
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                <div class="form-check">
-                                                                    <input
-                                                                        {{ $sample->type === 'Raw Material' ? 'checked' : '' }}
-                                                                        class="form-check-input" value="Raw Material"
-                                                                        type="radio" required name="type">
-                                                                    <label class="form-check-label">
-                                                                        Raw Material
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col mb-3">
-                                                                <div class="form-check">
-                                                                    <input {{ $sample->type === 'FPP' ? 'checked' : '' }}
-                                                                        class="form-check-input" value="FPP"
-                                                                        type="radio" required name="type">
-                                                                    <label class="form-check-label">
-                                                                        FPP
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col">
-                                                                <div class="form-check">
-                                                                    <input {{ $sample->type === 'VMA' ? 'checked' : '' }}
-                                                                        class="form-check-input" value="VMA"
-                                                                        type="radio" required name="type">
-                                                                    <label class="form-check-label">
-                                                                        VMA
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col"></div>
-                                                        </div>
-                                                        <div class="row mb-3">
-                                                            <div class="col">
-                                                                <div class="form-check">
-                                                                    <input
-                                                                        {{ $sample->type === 'Packaging Material' ? 'checked' : '' }}
-                                                                        class="form-check-input"
-                                                                        value="Packaging Material" type="radio" required
-                                                                        name="type">
-                                                                    <label class="form-check-label">
-                                                                        Packaging Material
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col">
-                                                                <div class="form-check">
-                                                                    <input
-                                                                        {{ $sample->type === 'Stabilita' ? 'checked' : '' }}
-                                                                        class="form-check-input" value="Stabilita"
-                                                                        type="radio" required name="type">
-                                                                    <label class="form-check-label">
-                                                                        Stabilita
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col">
-                                                                <div class="form-check">
-                                                                    <input {{ $sample->type === 'GPT' ? 'checked' : '' }}
-                                                                        class="form-check-input" value="GPT"
-                                                                        type="radio" required name="type">
-                                                                    <label class="form-check-label">
-                                                                        GPT
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col"></div>
-                                                        </div>
+                                                        <select name="type" class="form-control"
+                                                            id="update_type_sample">
+                                                            <option selected disabled>--- Select ----</option>
+                                                            @foreach ($types as $type)
+                                                                <option data-id={{ $type->id }}
+                                                                    {{ $type->id == $sample->type_id ? 'selected' : '' }}
+                                                                    value="{{ $type->type_code }}">
+                                                                    {{ $type->type }}</option>
+                                                            @endforeach
+                                                        </select>
                                                     </div>
                                                     <div class="mb-4">
                                                         <label for="">No ID Sample</label>
@@ -337,10 +281,10 @@
                                                             value="{{ $sample->tenggat_testing }}" name="tenggat_testing"
                                                             type="datetime-local">
                                                     </div>
-                                                    <div class="mb-4">
+                                                    <div class="mb-4" id="update_jumlah_sampel">
                                                         <label for="">Jumlah Sample</label>
                                                         <input class="form-control" value="{{ $sample->jumlah_sampel }}"
-                                                            name="jumlah_sampel" min="1" type="number">
+                                                            name="jumlah_sampel" min="1" type="number" required>
                                                     </div>
                                                     <div class="mb-4">
                                                         <label for="">Parameter Uji</label>
@@ -435,7 +379,7 @@
                         </div>
                         <div class="mb-4" style="display: none" id="jumlah_sampel">
                             <label for="">Jumlah Sample</label>
-                            <input class="form-control" name="jumlah_sampel" min="1" type="number">
+                            <input class="form-control" name="jumlah_sampel" min="1" type="number" required>
                         </div>
                         <div class="mb-4">
                             <label for="">Parameter Uji</label>
@@ -472,7 +416,42 @@
     <!-- Page level custom scripts -->
     <script src="{{ asset('assets/js/demo/datatables-demo.js') }}"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+
     <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: "/json/samples",
+                type: 'GET',
+                success: function(res) {
+                    generateBarcode(res)
+                }
+            });
+        })
+
+        function generateBarcode(res) {
+            res.map((item) => {
+                var elementBarode = '#barcodeSample' + item.qr_code
+                elementBarode = $(elementBarode)
+                var downloadButtonBarcode = '#downloadElectricBarcode' + item.qr_code
+                var testing = $('#barcodeSamplec9e65fb0-a909-44f9-88f9-bbfcdb5681b0')
+                html2canvas(testing, {
+                    useCORS: true,
+                    onrendered: function(canvas) {
+                        var imageData = canvas.toDataURL("image/jpg");
+                        var newData = imageData.replace(/^data:image\/jpg/,
+                            "data:application/octet-stream");
+                        $('#downloadElectricBarcodec913bc04-50b9-4b49-9101-9cf2b9c469b3').attr("download", item.qr_code +
+                            ".jpg").attr("href", newData);
+                    }
+                });
+            })
+        }
+
+        // function electricElementToImage() {
+        //
+        // }
+
         $('#type_sample').on('change', function() {
             const value = $(this).val();
             const dataId = $(this).find(':selected').attr('data-id')

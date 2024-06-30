@@ -23,6 +23,13 @@ class SampleController extends Controller
         return view('sample.index', $data);
     }
 
+    public function jsonSamples()
+    {
+        $samples = Sample::where('deleted_at', null)->get('qr_code');
+
+        return response()->json($samples);
+    }
+
     public function store(Request $request)
     {
         $parameter = ParameterTesting::find($request->parameter_uji);
@@ -40,7 +47,7 @@ class SampleController extends Controller
                 'tanggal_terima' => $request->tanggal_terima,
                 'parameter_testing_id' => $request->parameter_uji,
                 'tenggat_testing' => Carbon::now()->addDay($parameter->leadtime),
-                'jumlah_sampel' => $request->type == 'EM' ? $request->jumlah_sampel : 1,
+                'jumlah_sampel' => $request->type == 'BEM' ? $request->jumlah_sampel : 1,
                 'pic' => Auth::user()->id,
                 'status' => 'Pending'
             ]);

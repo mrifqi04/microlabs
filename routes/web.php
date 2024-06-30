@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/delete/parameters-testing/{id}', [ParameterTestingController::class, 'delete'])->name('deleteParametersTesting');
 
     Route::get('/samples', [SampleController::class, 'index'])->name('samples');
+    Route::get('/json/samples', [SampleController::class, 'jsonSamples']);
     Route::get('/count-sample/{typeID}',  [SampleController::class, 'countSample']);
     Route::post('/sample', [SampleController::class, 'store'])->name('storeSamples');
     Route::post('/update/sample/{id}', [SampleController::class, 'update'])->name('updateSample');

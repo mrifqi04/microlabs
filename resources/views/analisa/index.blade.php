@@ -15,8 +15,8 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Sample Masuk</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">12</div>
+                                    Sample Dianalisa</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $inreview_sample }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-arrow-down fa-2x text-gray-300"></i>
@@ -33,8 +33,8 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Sample Keluar</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">13</div>
+                                    Sample Selesai</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $done_sample }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-arrow-up fa-2x text-gray-300"></i>
@@ -45,11 +45,10 @@
             </div>
         </div>
 
-        <div class="d-sm-flex align-items-center mb-4">
-            <button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal"
-                data-target="#scanInModal">
+        <div class="d-grid gap-2 col-12 mx-auto">
+            <button href="#" class="btn btn-primary shadow-sm" data-toggle="modal" data-target="#scanInModal">
                 <i class="fas fa-arrow-down fa-sm text-white-50"></i>
-                Scan in Sample
+                Scan Sample
             </button>
         </div>
 
@@ -59,7 +58,11 @@
                     <thead>
                         <tr>
                             <th>Sample</th>
+                            <th>Deskripsi</th>
+                            <th>No Batch</th>
+                            <th>Tanggal Terima</th>
                             <th>Leadtime</th>
+                            <th>PIC</th>
                             <th>History</th>
                             <th></th>
                         </tr>
@@ -67,7 +70,11 @@
                     <tfoot>
                         <tr>
                             <th>Sample</th>
+                            <th>Deskripsi</th>
+                            <th>No Batch</th>
+                            <th>Tanggal Terima</th>
                             <th>Leadtime</th>
+                            <th>PIC</th>
                             <th>History</th>
                             <th></th>
                         </tr>
@@ -75,8 +82,12 @@
                     <tbody>
                         @foreach ($analytics as $analytic)
                             <tr>
-                                <td>{{ $analytic->type }} - {{ $analytic->no_sample }}</td>
-                                <td> {{ Date("d M Y - H:i", strtotime($analytic->tenggat_testing)) }}</td>
+                                <td>{{ $analytic->TypeTesting->type }} - {{ $analytic->no_sample }}</td>
+                                <td>{{ $analytic->deskripsi_sample }}</td>
+                                <td>{{ $analytic->no_batch }}</td>
+                                <td> {{ Date('d M Y - H:i', strtotime($analytic->tanggal_terima)) }}</td>
+                                <td> {{ Date('d M Y - H:i', strtotime($analytic->tenggat_testing)) }}</td>
+                                <td>{{ $analytic->PIC->name }}</td>
                                 <td>
                                     <button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
                                         data-toggle="modal" data-target="#historySample{{ $analytic->id }}">
@@ -85,11 +96,13 @@
                                     </button>
                                 </td>
                                 <td>
-                                    <a href="#"
-                                        class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm ml-3">
-                                        <i class="fas fa-barcode fa-sm text-white-50"></i>
+                                    <button href="#"
+                                        class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm ml-3"
+                                        data-toggle="modal" data-target="#scanInModal"
+                                        onclick="scanDoneSample({{ $analytic->id }})" data-type="done">
+                                        <i class="fas fa-barcode fa-sm text-white-50"></i> <br>
                                         Scan Done
-                                    </a>
+                                    </button>
                                 </td>
                             </tr>
 
@@ -116,10 +129,10 @@
                                                                 </span>
                                                             @endif
                                                             <br>
-                                                            {{ $history->Sample->type }}
-                                                            <span class="fas fa-arrow-right text-success"></span>
+                                                            {{ $history->Sample->no_sample }}
+                                                            <span class="fas fa-arrow-right text-info"></span>
                                                             {{ $history->Instrument->nama_instrument }}
-                                                        @else
+                                                        @elseif($history->scan_out)
                                                             <b>{{ $history->scan_out }}</b> by {{ $history->PIC->name }}
                                                             @if ($history->status == 'In Review')
                                                                 <span class="text-warning">
@@ -129,7 +142,18 @@
                                                             <br>
                                                             {{ $history->Instrument->nama_instrument }}
                                                             <span class="fas fa-arrow-right text-danger"></span>
-                                                            {{ $history->Sample->type }}
+                                                            {{ $history->Sample->no_sample }}
+                                                        @elseif($history->scan_done)
+                                                            <b>{{ $history->scan_out }}</b> by {{ $history->PIC->name }}
+                                                            @if ($history->status == 'Done')
+                                                                <span class="text-success">
+                                                                    <i>({{ $history->status }})</i>
+                                                                </span>
+                                                            @endif
+                                                            <br>
+                                                            {{ $history->Instrument->nama_instrument }}
+                                                            <span class="fas fa-arrow-right text-success"></span>
+                                                            {{ $history->Sample->no_sample }}
                                                         @endif
                                                     </li>
                                                 @endforeach
@@ -149,7 +173,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="scanInModal">Scan In Sample</h5>
+                    <h5 class="modal-title" id="scanInModalTitle">Scan In Sample</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">x</span>
                     </button>
@@ -171,17 +195,9 @@
                                         <input readonly class="form-control" name="sampleIDSection1"
                                             id="sampleIDSection1">
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-9">
                                         <input readonly class="form-control" name="sampleIDSection2"
                                             id="sampleIDSection2">
-                                    </div>
-                                    <div class="col-3">
-                                        <input readonly class="form-control" name="sampleIDSection3"
-                                            id="sampleIDSection3">
-                                    </div>
-                                    <div class="col-3">
-                                        <input readonly class="form-control" name="sampleIDSection4"
-                                            id="sampleIDSection4">
                                     </div>
                                 </div>
                             </div>
@@ -233,6 +249,11 @@
                                 Scan Out
                             </button>
                         </div>
+                        <div id="scan_done_button" style="display: none">
+                            <button type="submit" value="scan_done" name="scan_type" class="btn btn-info">
+                                Scan Done
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -255,6 +276,7 @@
     <script src="{{ asset('assets/js/demo/datatables-demo.js') }}"></script>
 
     <script src="{{ asset('assets/js/scanqr.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         var QrCodeScannerSample = new Html5QrcodeScanner(
@@ -269,13 +291,50 @@
                 url: "/show/sample/analitycs/" + decodedText,
                 type: 'GET',
                 success: function(res) {
-                    var data = res.data
+                    const data = res.data
+
+                    if (data.status == 'Done') {
+                        Swal.fire({
+                            title: "Info !",
+                            text: "This sample already done",
+                            icon: "info"
+                        });
+                        return
+                    }
+
+                    if (data.analytics.length > 0) {
+                        if (data.analytics[0].scan_in) {
+                            onScanInstrumentSuccess(data.analytics[0].instrument.qr_code, null, data
+                                .analytics)
+                            console.log('here 1')
+                            $('#scan_out_button').css('display', 'block')
+                            $('#scan_in_button').css('display', 'none')
+                        } else {
+                            const titleModal = $('#scanInModalTitle').html()
+                            if (titleModal == 'Scan Done Sample') {
+                                console.log('should leave')
+                                Swal.fire({
+                                    title: "Info !",
+                                    text: "Please insert sample into instrument first",
+                                    icon: "info"
+                                });
+                                return
+                            }
+                            $('#instrumentReader').css('display', 'block')
+                        }
+                    } else {
+                        console.log('here 2')
+                        $('#instrumentReader').css('display', 'block')
+                    }
+
+
+
                     const no_sample = data.no_sample.split("-")
 
                     $('#sampleReader').css('display', 'none')
                     $('#sampleData').css('display', 'block')
 
-                    $('#sampleType').val(data.type)
+                    $('#sampleType').val(data.type_testing.type)
                     $('#sampleId').val(data.id)
                     $('#sampleIDSection1').val(no_sample[0])
                     $('#sampleIDSection2').val(no_sample[1])
@@ -286,18 +345,8 @@
                     $('#sampleDateIn').val(data.tanggal_terima)
                     $('#sampleParameterUji').val(data.parameter_testing.parameter_uji)
 
-                    if (data.analytics.length > 0) {
-                        if (data.analytics[0].scan_in) {
-                            onScanInstrumentSuccess(data.analytics[0].instrument.qr_code, null, data.analytics)
-                            $('#scan_out_button').css('display', 'block')
-                            $('#scan_in_button').css('display', 'none')
-                        } else {
-                            $('#instrumentReader').css('display', 'block')
-                        }
-                    } else {
-                        $('#instrumentReader').css('display', 'block')
-                    }
                     QrCodeScannerSample.clear()
+
                 }
             });
         }
@@ -324,12 +373,29 @@
                     $('#instrumentData').css('display', 'block')
 
                     if (!sample) {
-                        console.log('wasu tenant')
                         $('#scan_in_button').css('display', 'block')
                     }
 
-                    QrCodeScannerInstrument.clear()
+                    const titleModal = $('#scanInModalTitle').html()
+                    if (titleModal == 'Scan Done Sample') {
+                        console.log('here 3')
+                        $('#scan_out_button').css('display', 'none')
+                        $('#scan_done_button').css('display', 'block')
+                    }
+
                 }
+            });
+        }
+
+        function scanDoneSample(id) {
+            $('#scanInModalTitle').html('Scan Done Sample')
+
+            $('#scanInModal').on("hidden.bs.modal", function() {
+                console.log('here 4')
+
+                $('#scan_done_button').css('display', 'none')
+
+                $('#scanInModalTitle').html('Scan In Sample')
             });
         }
     </script>
