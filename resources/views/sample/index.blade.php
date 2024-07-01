@@ -379,7 +379,7 @@
                         </div>
                         <div class="mb-4" style="display: none" id="jumlah_sampel">
                             <label for="">Jumlah Sample</label>
-                            <input class="form-control" name="jumlah_sampel" min="1" type="number" required>
+                            <input class="form-control" name="jumlah_sampel" min="1" type="number">
                         </div>
                         <div class="mb-4">
                             <label for="">Parameter Uji</label>
