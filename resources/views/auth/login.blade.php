@@ -58,6 +58,7 @@
                                         </button>
                                         <hr>
                                     </form>
+                                    <a href="#">Forgot Password</a>
                                 </div>
                             </div>
                         </div>
