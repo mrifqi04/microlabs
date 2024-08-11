@@ -40,19 +40,20 @@
                             <div class="col-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Forget Password</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">Create New Password</h1>
                                     </div>
-                                    <form class="user" method="POST" action="{{ route('validateForgotPassword') }}">
+                                    <form class="user" method="POST" action="{{ route('postNewPassword') }}">
                                         @csrf
+                                        <input type="hidden" name="user_id" value="{{ $user->id }}">
                                         <div class="form-group">
-                                            <input type="text" name="nik" class="form-control form-control-user" placeholder="Enter NIK...">
+                                            <input type="password" name="password" class="form-control form-control-user" placeholder="Enter password...">
                                         </div>
                                         <div class="form-group">
-                                            <input type="text" name="username" class="form-control form-control-user" id="exampleInputEmail"
-                                                aria-describedby="emailHelp" placeholder="Enter username...">
+                                            <input type="password" name="password_confirmation" class="form-control form-control-user" id="exampleInputEmail"
+                                                aria-describedby="emailHelp" placeholder="Enter password confirmation...">
                                         </div>
                                         <button  type="submit" class="btn btn-primary btn-user btn-block">
-                                            Validate
+                                            Change Password
                                         </button>
                                         <hr>
                                     </form>

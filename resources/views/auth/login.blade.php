@@ -25,12 +25,16 @@
 <body class="bg-gradient-primary">
 
     <div class="container">
-
         <!-- Outer Row -->
         <div class="row justify-content-center">
 
             <div class="col-xl-10 col-lg-12 col-md-9">
                 <div class="card o-hidden border-0 shadow-lg my-5">
+                    @if (session('status'))
+                        <div class="alert alert-success mb-4">
+                            {{ session('status') }}
+                        </div>
+                    @endif
                     <div class="card-body p-0">
                         <div class="row">
                             <div class="col-6 p-5">
@@ -45,20 +49,22 @@
                                     <form class="user" method="POST" action="{{ route('login') }}">
                                         @csrf
                                         <div class="form-group">
-                                            <input type="text" name="username" class="form-control form-control-user" id="exampleInputEmail"
-                                                aria-describedby="emailHelp" placeholder="Enter username...">
+                                            <input type="text" name="username" class="form-control form-control-user"
+                                                id="exampleInputEmail" aria-describedby="emailHelp"
+                                                placeholder="Enter username...">
                                         </div>
                                         <div class="form-group">
-                                            <input type="password" name="password" class="form-control form-control-user"
-                                                id="exampleInputPassword" placeholder="Password">
+                                            <input type="password" name="password"
+                                                class="form-control form-control-user" id="exampleInputPassword"
+                                                placeholder="Password">
                                         </div>
 
-                                        <button  type="submit" class="btn btn-primary btn-user btn-block">
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">
                                             Login
                                         </button>
                                         <hr>
                                     </form>
-                                    <a href="#">Forgot Password</a>
+                                    <a href="{{ route('forgetPassword') }}">Forgot Password</a>
                                 </div>
                             </div>
                         </div>
@@ -68,7 +74,7 @@
         </div>
 
     </div>
-
+    @include('sweetalert::alert')
 </body>
 
 </html>

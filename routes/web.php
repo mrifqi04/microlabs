@@ -3,6 +3,7 @@
 use App\Http\Controllers\AnalyticController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ForgetPasswordController;
 use App\Http\Controllers\InstrumentController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\MediaAnalyticController;
@@ -27,6 +28,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+Route::get('/forget-password', [ForgetPasswordController::class, 'index'])->name('forgetPassword');
+Route::post('/validate/forget-password', [ForgetPasswordController::class, 'validateData'])->name('validateForgotPassword');
+Route::post('/save/new-password', [ForgetPasswordController::class, 'postNewPassword'])->name('postNewPassword');
 
 
 Route::middleware('auth')->group(function () {
