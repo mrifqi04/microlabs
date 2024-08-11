@@ -16,8 +16,11 @@ class SampleController extends Controller
 {
     public function index()
     {
-        $data['parameters'] = ParameterTesting::where('deleted_at', null)->get();
-        $data['samples'] = Sample::where('deleted_at', null)->get();
+        $data['parameters'] = ParameterTesting::where('deleted_at', null)
+            ->where('is_microba', false)
+            ->get();
+
+        $data['samples'] = Sample::where('deleted_at', null)->orderBy('id', 'desc')->get();
         $data['types'] = TypeTesting::all();
 
         return view('sample.index', $data);
@@ -32,27 +35,28 @@ class SampleController extends Controller
 
     public function store(Request $request)
     {
-        $parameter = ParameterTesting::find($request->parameter_uji);
-        $samples = Sample::where('deleted_at', null)->get();
         $type = TypeTesting::where('type_code', $request->type)->first();
+        $samples = Sample::where('deleted_at', null)->get();
 
         try {
             DB::beginTransaction();
 
-            $createSample = Sample::create([
-                'type_id' => $type->id,
-                'no_sample' => $request->section1 . '-' . $request->section2 . $request->section3 . str_pad(count($samples) + 1, 4, 0, STR_PAD_LEFT),
-                'no_batch' => $request->no_batch,
-                'deskripsi_sample' => $request->deskripsi_sample,
-                'tanggal_terima' => $request->tanggal_terima,
-                'parameter_testing_id' => $request->parameter_uji,
-                'tenggat_testing' => Carbon::now()->addDay($parameter->leadtime),
-                'jumlah_sampel' => $request->type == 'BEM' ? $request->jumlah_sampel : 1,
-                'pic' => Auth::user()->id,
-                'status' => 'Pending'
-            ]);
-
-            $createSample->generateBarcode();
+            foreach ($request->parameter_testing_id as $item) {
+                $parameter = ParameterTesting::find($item);
+                $createSample = Sample::create([
+                    'type_id' => $type->id,
+                    'no_sample' => $request->section1 . '-' . $request->section2 . $request->section3 . str_pad(count($samples) + 1, 4, 0, STR_PAD_LEFT),
+                    'no_batch' => $request->no_batch,
+                    'deskripsi_sample' => $request->deskripsi_sample,
+                    'tanggal_terima' => $request->tanggal_terima,
+                    'parameter_testing_id' => $item,
+                    'tenggat_testing' => Carbon::now()->addDay($parameter->leadtime),
+                    'jumlah_sampel' => $request->type == 'BEM' ? $request->jumlah_sampel : 1,
+                    'pic' => Auth::user()->id,
+                    'status' => 'Pending'
+                ]);
+                $createSample->generateBarcode();
+            }
 
             DB::commit();
 
@@ -98,5 +102,12 @@ class SampleController extends Controller
         $samples = Sample::where('type_id', $id)->count();
 
         return response()->json($samples);
+    }
+
+    public function generateBarcode($id)
+    {
+        $data['sample'] = Sample::find($id);
+
+        return view('sample.generate_barcode', $data);
     }
 }

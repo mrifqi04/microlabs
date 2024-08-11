@@ -14,4 +14,10 @@ class ParameterTesting extends Model
         'leadtime',
         'deleted_at'
     ];
+
+
+    public function Samples()
+    {
+        return $this->hasMany(Sample::class, 'parameter_testing_id', 'id');
+    }
 }

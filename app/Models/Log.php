@@ -5,17 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TypeTesting extends Model
+class Log extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'type',
-        'type_code'
+        'user_id',
+        'activity'
     ];
 
-    public function Samples()
+    public function User()
     {
-        return $this->hasMany(Sample::class, 'type_id', 'id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 }

@@ -1,5 +1,16 @@
 @extends('layouts.master')
 
+{{-- @section('head')
+    <style>
+        .table td,
+        table th {
+            text-align: center;
+            vertical-align: center;
+            align-items: mid;
+        }
+    </style>
+@endsection --}}
+
 @section('head')
     <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
 @endsection
@@ -26,65 +37,80 @@
                 <div class="table-responsive">
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
-                            <tr>
+                            <tr class="text-center">
                                 <th>No</th>
                                 <th>Barcode</th>
-                                <th>Desc</th>
-                                <th>Type</th>
-                                <th>No Sample</th>
-                                <th>No Batch</th>
+                                <th>Detail</th>
                                 <th>Jumlah</th>
                                 <th>Tanggal Terima</th>
                                 <th>PIC</th>
+                                <th>Parameter Uji</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tfoot>
-                            <tr>
+                            <tr class="text-center">
                                 <th>No</th>
                                 <th>Barcode</th>
-                                <th>Desc</th>
-                                <th>Type</th>
-                                <th>No Sample</th>
-                                <th>No Batch</th>
+                                <th>Detail</th>
                                 <th>Jumlah</th>
                                 <th>Tanggal Terima</th>
                                 <th>PIC</th>
+                                <th>Parameter Uji</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </tfoot>
                         <tbody>
                             @foreach ($samples as $key => $sample)
-                                <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>
-                                        <button class="btn btn-info btn-sm" type="button" data-toggle="modal"
-                                            data-target="#showModalImage{{ $sample->id }}">
+                                <tr class="text-center">
+                                    <td class="align-middle">{{ $key + 1 }}</td>
+                                    <td class="align-middle">
+                                        <a target="_blank" href="{{ route('generateBarcode', $sample->id) }}"
+                                            class="btn btn-info btn-sm" type="button">
                                             <i class="fas fa-barcode fa-sm text-white-50"></i> <br>
                                             Download Barcode
-                                        </button>
+                                        </a>
                                     </td>
-                                    <td>{{ $sample->deskripsi_sample }}</td>
-                                    <td>{{ $sample->TypeTesting->type }}</td>
-                                    <td>{{ $sample->no_sample }}</td>
-                                    <td>{{ $sample->no_batch }}</td>
-                                    <td>{{ $sample->jumlah_sampel }}</td>
-                                    <td>{{ Date('d-m-Y, H:i', strtotime($sample->tanggal_terima)) }}</td>
-                                    <td>{{ $sample->PIC->name }}</td>
                                     <td>
+                                        <small>Type</small>
+                                        <p>
+                                            {{ $sample->TypeTesting->type }}
+                                        </p>
+                                        <hr>
+                                        <small>Deskripsi</small>
+                                        <p>
+                                            {{ $sample->deskripsi_sample }}
+                                        </p>
+                                        <hr>
+                                        <small>No Sample</small>
+                                        <p>
+                                            {{ $sample->no_sample }}
+                                        </p>
+                                        <hr>
+                                        <small>No Batch</small>
+                                        <p>
+                                            {{ $sample->no_batch }}
+                                        </p>
+                                    </td>
+                                    <td class="align-middle">{{ $sample->jumlah_sampel }}</td>
+                                    <td class="align-middle"> {{ Date('d-m-Y, H:i', strtotime($sample->tanggal_terima)) }}
+                                    </td>
+                                    <td class="align-middle">{{ $sample->PIC->name }}</td>
+                                    <td class="align-middle">{{ $sample->ParameterTesting->parameter_uji }}</td>
+                                    <td class="align-middle">
                                         @if ($sample->status == 'Pending')
                                             <span class="badge badge-warning">{{ $sample->status }}</span>
                                         @endif
-                                        @if ($sample->status == 'In Review')
+                                        @if ($sample->status == 'On Process')
                                             <span class="badge badge-info">{{ $sample->status }}</span>
                                         @endif
                                         @if ($sample->status == 'Done')
                                             <span class="badge badge-success">{{ $sample->status }}</span>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <button class="btn btn-info btn-sm" type="button" data-toggle="modal"
                                             data-target="#showModal{{ $sample->id }}">
                                             <i class="fas fa-fw fa-eye"></i>
@@ -105,36 +131,6 @@
                                         @endif
                                     </td>
                                 </tr>
-
-                                <div class="modal fade" id="showModalImage{{ $sample->id }}" tabindex="-1"
-                                    role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Barcode
-                                                    {{ $sample->no_sample }}
-                                                </h5>
-                                                <button class="close" type="button" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">x</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row" id="barcodeSample{{ $sample->qr_code }}">
-                                                    <div class="col">
-                                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data={{ $sample->qr_code }}"
-                                                            alt="" width="100%">
-                                                    </div>
-                                                    <div class="col">
-                                                        <span>test</span>
-                                                    </div>
-                                                </div>
-                                                <a class="btn btn-success btn-sm mt-3"
-                                                    id="downloadElectricBarcode{{ $sample->qr_code }}">Download</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <div class="modal fade" id="showModal{{ $sample->id }}" tabindex="-1" role="dialog"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -383,13 +379,19 @@
                         </div>
                         <div class="mb-4">
                             <label for="">Parameter Uji</label>
-                            <select class="form-control" name="parameter_uji" id="">
+                            <div class="row">
                                 @foreach ($parameters as $parameter)
-                                    <option value="{{ $parameter->id }}">
-                                        {{ $parameter->parameter_uji }}
-                                    </option>
+                                    <div class="col-4 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" value="{{ $parameter->id }}" type="checkbox"
+                                                name="parameter_testing_id[]" id="flexRadioDefault1">
+                                            <label class="form-check-label">
+                                                {{ $parameter->parameter_uji }}
+                                            </label>
+                                        </div>
+                                    </div>
                                 @endforeach
-                            </select>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -416,42 +418,8 @@
     <!-- Page level custom scripts -->
     <script src="{{ asset('assets/js/demo/datatables-demo.js') }}"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
 
     <script>
-        $(document).ready(function() {
-            $.ajax({
-                url: "/json/samples",
-                type: 'GET',
-                success: function(res) {
-                    generateBarcode(res)
-                }
-            });
-        })
-
-        function generateBarcode(res) {
-            res.map((item) => {
-                var elementBarode = '#barcodeSample' + item.qr_code
-                elementBarode = $(elementBarode)
-                var downloadButtonBarcode = '#downloadElectricBarcode' + item.qr_code
-                var testing = $('#barcodeSamplec9e65fb0-a909-44f9-88f9-bbfcdb5681b0')
-                html2canvas(testing, {
-                    useCORS: true,
-                    onrendered: function(canvas) {
-                        var imageData = canvas.toDataURL("image/jpg");
-                        var newData = imageData.replace(/^data:image\/jpg/,
-                            "data:application/octet-stream");
-                        $('#downloadElectricBarcodec913bc04-50b9-4b49-9101-9cf2b9c469b3').attr("download", item.qr_code +
-                            ".jpg").attr("href", newData);
-                    }
-                });
-            })
-        }
-
-        // function electricElementToImage() {
-        //
-        // }
-
         $('#type_sample').on('change', function() {
             const value = $(this).val();
             const dataId = $(this).find(':selected').attr('data-id')

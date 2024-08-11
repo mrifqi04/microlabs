@@ -11,16 +11,25 @@ class Analytic extends Model
 
     protected $fillable = [
         'sample_id',
+        'type',
         'instrument_id',
         'scan_in',
         'scan_out',
         'scan_done',
         'pic',
-        'status'
+        'status',
+        'temperature',
+        'leadtime',
+        'method',
+        'replication'
     ];
 
     public function Sample() {
         return $this->hasOne(Sample::class, 'id', 'sample_id');
+    }
+
+    public function Media() {
+        return $this->hasOne(Media::class, 'id', 'sample_id');
     }
 
     public function Instrument() {

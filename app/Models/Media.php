@@ -6,50 +6,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class Sample extends Model
+class Media extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'type_id',
-        'no_sample',
-        'no_batch',
-        'deskripsi_sample',
-        'tanggal_terima',
-        'parameter_testing_id',
-        'tenggat_testing',
-        'jumlah_sampel',
-        'pic',
-        'status',
-        'deleted_at'
+        'no_media',
+        'media_name',
+        'leadtime',
+        'barcode',
+        'deleted_at',
+        'status'
     ];
 
     function generateBarcode()
     {
         $rand = Str::uuid()->toString();
-        $this->qr_code = $rand;
+        $this->barcode = $rand;
         $this->save();
-    }
-
-    function ParameterTesting()
-    {
-        return $this->hasOne(ParameterTesting::class, 'id', 'parameter_testing_id');
-    }
-
-    function Analytics()
-    {
-        return $this->hasMany(Analytic::class, 'sample_id', 'id')
-            ->where('type', 'sample')
-            ->orderBy('id', 'DESC');
-    }
-
-    function HistoryAnalytics($replication)
-    {
-        return $this->hasMany(Analytic::class, 'sample_id', 'id')
-            ->where('type', 'sample')
-            ->where('replication', $replication)
-            ->orderBy('id', 'DESC')
-            ->get();
     }
 
     function PIC()
@@ -57,8 +31,19 @@ class Sample extends Model
         return $this->hasOne(User::class, 'id', 'pic');
     }
 
-    function TypeTesting()
+    function Analytics()
     {
-        return $this->hasOne(TypeTesting::class, 'id', 'type_id');
+        return $this->hasMany(Analytic::class, 'sample_id', 'id')
+            ->where('type', 'media')
+            ->orderBy('id', 'DESC');
+    }
+
+    function HistoryAnalytics($replication)
+    {
+        return $this->hasMany(Analytic::class, 'sample_id', 'id')
+            ->where('type', 'media')
+            ->where('replication', $replication)
+            ->orderBy('id', 'DESC')
+            ->get();
     }
 }

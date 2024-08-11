@@ -9,6 +9,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Helpers\CreateLog;
+
+use function App\Helpers\createLog;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -28,6 +31,8 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        CreateLog::createLog('User login');
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }

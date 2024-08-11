@@ -2,7 +2,6 @@
 
 @section('head')
     <link href="{{ asset('assets/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 @endsection
 
 @section('content')
@@ -16,8 +15,8 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Sample Dianalisa</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $inreview_sample }}</div>
+                                    Media Dianalisa</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $inreview_media }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-arrow-down fa-2x text-gray-300"></i>
@@ -26,6 +25,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- Earnings (Monthly) Card Example -->
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card border-left-success shadow h-100 py-2">
@@ -33,8 +33,8 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Sample Selesai</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $done_sample }}</div>
+                                    Media Selesai</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $done_media }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-arrow-up fa-2x text-gray-300"></i>
@@ -48,8 +48,13 @@
         <div class="d-grid gap-2 col-12 mx-auto">
             <button href="#" class="btn btn-primary shadow-sm" data-toggle="modal" data-target="#scanInModal">
                 <i class="fas fa-arrow-down fa-sm text-white-50"></i>
-                Scan In Sample
+                Scan In Media
             </button>
+            {{-- <button href="#" class="btn btn-primary shadow-sm" data-toggle="modal" onclick="scanOutSample()"
+                data-target="#scanInModal">
+                <i class="fas fa-arrow-up fa-sm text-white-50"></i>
+                Scan Out Media
+            </button> --}}
         </div>
 
         <div class="card-body">
@@ -58,10 +63,8 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Sample</th>
-                            <th>Deskripsi</th>
-                            <th>No Batch</th>
-                            <th>Tanggal Terima</th>
+                            <th>Media</th>
+                            <th>Tanggal Scan In</th>
                             <th>Leadtime</th>
                             <th>PIC</th>
                             <th>History</th>
@@ -70,10 +73,9 @@
                     </thead>
                     <tfoot>
                         <tr>
-                            <th>Sample</th>
-                            <th>Deskripsi</th>
-                            <th>No Batch</th>
-                            <th>Tanggal Terima</th>
+                            <th>No</th>
+                            <th>Media</th>
+                            <th>Tanggal Scan In</th>
                             <th>Leadtime</th>
                             <th>PIC</th>
                             <th>History</th>
@@ -81,50 +83,43 @@
                         </tr>
                     </tfoot>
                     <tbody>
-                        {{-- {{ dd($analytics) }} --}}
                         @foreach ($analytics as $key => $analytic)
                             <tr>
                                 <td>{{ $key + 1 }}</td>
                                 <td>
-                                    {{ $analytic->Sample->TypeTesting->type }} - {{ $analytic->Sample->no_sample }} <br>
-                                    Parameter : <b>{{ $analytic->Sample->ParameterTesting->parameter_uji }}</b> <br>
+                                    {{ $analytic->Media->media_name }} - {{ $analytic->Media->no_media }} <br>
                                     Replikasi : <b>{{ $analytic->replication }}</b>
                                 </td>
-                                <td class="align-middle">{{ $analytic->Sample->deskripsi_sample }}</td>
-                                <td class="align-middle">{{ $analytic->Sample->no_batch }}</td>
-                                <td class="align-middle">
-                                    {{ Date('d M Y - H:i', strtotime($analytic->Sample->tanggal_terima)) }}</td>
-                                <td class="align-middle text-center">
-                                    {{ Date('d M Y - H:i', strtotime($analytic->Sample->HistoryAnalytics($analytic->replication)[0]->leadtime)) }}
-                                    @if (Date('Y-m-d', strtotime($analytic->Sample->HistoryAnalytics($analytic->replication)[0]->leadtime)) == Carbon\Carbon::now()->format('Y-m-d'))
-                                        <img src="{{ asset('assets/img/warning-leadtime.png') }}" width="20">
-                                    @endif
+                                <td>
+                                    {{ Date('d M Y - H:i', strtotime($analytic->scan_in)) }}
                                 </td>
-                                <td class="align-middle">{{ $analytic->PIC->name }}</td>
-                                <td class="align-middle">
+                                <td>
+                                    {{ Date('d M Y - H:i', strtotime($analytic->leadtime)) }}
+                                </td>
+                                <td>{{ $analytic->PIC->name }}</td>
+                                <td>
                                     <button href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
                                         data-toggle="modal" data-target="#historySample{{ $analytic->id }}">
                                         <i class="fas fa-book fa-sm text-white-50"></i>
                                         History
                                     </button>
                                 </td>
-                                <td class="text-center">
-                                    <div class="mb-3">
-                                        <button href="#" class=" btn btn-sm btn-primary shadow-sm "
-                                            data-toggle="modal" data-target="#scanInModal"
-                                            onclick="scanOutSample({{ $analytic->sample_id }}, {{ $analytic->instrument_id }}, '{{ $analytic->replication }}')"
-                                            data-type="done">
-                                            Scan Out
-                                        </button>
-                                    </div>
-                                    <div class="">
-                                        <button href="#" class=" btn btn-sm btn-primary shadow-sm "
-                                            data-toggle="modal" data-target="#scanInModal"
-                                            onclick="scanDoneSample({{ $analytic->sample_id }}, {{ $analytic->instrument_id }}, '{{ $analytic->replication }}')"
-                                            data-type="done">
-                                            Scan Done
-                                        </button>
-                                    </div>
+                                <td>
+                                    <button href="#"
+                                        class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm ml-3"
+                                        data-toggle="modal" data-target="#scanInModal"
+                                        onclick="scanOutSample({{ $analytic->sample_id }}, {{ $analytic->instrument_id }}, '{{ $analytic->replication }}')"
+                                        data-type="done">
+                                        <i class="fas fa-barcode fa-sm text-white-50"></i> <br>
+                                        Scan Out
+                                    </button>
+                                    <button href="#"
+                                        class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm ml-3"
+                                        data-toggle="modal" data-target="#scanInModal"
+                                        onclick="scanDoneSample({{ $analytic->id }})" data-type="done">
+                                        <i class="fas fa-barcode fa-sm text-white-50"></i> <br>
+                                        Scan Done
+                                    </button>
                                 </td>
                             </tr>
 
@@ -160,14 +155,14 @@
                                                     <h6>Status</h6>
                                                 </div>
                                             </div>
-                                            @foreach ($analytic->Sample->HistoryAnalytics($analytic->replication) as $history)
+                                            @foreach ($analytic->Media->HistoryAnalytics($analytic->replication) as $history)
                                                 <div class="row justify-content-between align-items-center border-bottom p-1">
                                                     <div class="col-2">
                                                         <span>
-                                                            {{ $history->Sample->no_sample }}
+                                                            {{ $history->Media->no_media }}
                                                         </span> <br>
                                                         <span>
-                                                            {{ $history->Sample->no_batch }}
+                                                            {{ $history->Media->no_batch }}
                                                         </span>
                                                         <hr>
                                                         <span>
@@ -204,7 +199,7 @@
 
     <div class="modal fade modalScan" id="scanInModal" tabindex="-1" role="dialog" aria-labelledby="scanInModal"
         aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="scanInModalTitle">Scan In Sample</h5>
@@ -212,45 +207,19 @@
                         <span aria-hidden="true">x</span>
                     </button>
                 </div>
-                <form action="{{ route('storeAnalitics') }}" method="post">
+                <form action="{{ route('storeAnaliticMedia') }}" method="post">
                     @csrf
                     <div class="modal-body">
                         <div style="width: 100%" id="sampleReader"></div>
+                        <input type="hidden" name="id_sample" id="sampleId">
                         <div id="sampleData" style="display: none">
                             <div class="mb-4">
-                                <label class="form-label">Jenis Sample</label>
-                                <input readonly class="form-control" id="sampleType">
+                                <label class="form-label">No Media</label>
+                                <input readonly class="form-control" id="noMediaValue">
                             </div>
                             <div class="mb-4">
-                                <label class="form-label">No Sample</label>
-                                <input type="hidden" name="id_sample" id="sampleId">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <input readonly class="form-control" name="sampleIDSection1"
-                                            id="sampleIDSection1">
-                                    </div>
-                                    <div class="col-9">
-                                        <input readonly class="form-control" name="sampleIDSection2"
-                                            id="sampleIDSection2">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label">Deskripsi Sample</label>
-                                <textarea readonly class="form-control" name="sampleDesc" id="sampleDesc"></textarea>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label">No. Batch / No. QC / Titik Sampling / Lokasi</label>
-                                <input readonly class="form-control" name="sampleNoBatch" id="sampleNoBatch">
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label">Tanggal sample masuk</label>
-                                <input readonly class="form-control" name="sampleDateIn" type="datetime-local"
-                                    id="sampleDateIn">
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label">Parameter uji</label>
-                                <input readonly class="form-control" name="sampleParameterUji" id="sampleParameterUji">
+                                <label class="form-label">Nama Media</label>
+                                <input readonly class="form-control" id="namaMediaValue">
                             </div>
                         </div>
                         <div id="instrumentData" style="display: none">
@@ -295,10 +264,8 @@
                                 </div>
                             </div>
                             <div class="mb-4" style="display: none" id="replicationInput">
-                                <label class="form-label">Replikasi</label> <br>
-                                {{-- <input type="text" name="replication" id="replicationVal" class="form-control"> --}}
-                                <select class="tag-input" name="replication" multiple="multiple">
-                                </select>
+                                <label class="form-label">Replikasi</label>
+                                <input type="text" name="replication" id="replicationVal" class="form-control">
                             </div>
                         </div>
                     </div>
@@ -330,7 +297,6 @@
 @section('script')
     <!-- Core plugin JavaScript-->
     <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
     <!-- Custom scripts for all pages-->
     <script src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script>
@@ -361,7 +327,7 @@
 
         function onScanSampleSuccess(decodedText, decodedResult) {
             $.ajax({
-                url: "/show/sample/analitycs/" + decodedText,
+                url: "/show/media/analitycs/" + decodedText,
                 type: 'GET',
                 data: {
                     replication: replicationVar,
@@ -374,25 +340,17 @@
 
                     const titleModal = $('#scanInModalTitle').html()
 
-                    // if (data.status == 'Done') {
-                    //     Swal.fire({
-                    //         title: "Info !",
-                    //         text: "This sample already done",
-                    //         icon: "info"
-                    //     });
-                    //     return
-                    // }
-                    console.log(data)
-                    if (titleModal === "Scan Out Sample" || titleModal === "Scan Done Sample") {
+                    if (titleModal === "Scan Out Media" || titleModal === "Scan Done Media") {
+                        console.log(data)
                         if (data.analytics[0].scan_in) {
                             onScanInstrumentSuccess(data.analytics[0].instrument.qr_code, null, data
                                 .analytics)
-                            if (titleModal === 'Scan Out Sample') {
+                            if (titleModal === 'Scan Out Media') {
                                 $('#scan_out_button').css('display', 'block')
                             }
                             $('#scan_in_button').css('display', 'none')
                         } else {
-                            // if (titleModal == 'Scan Done Sample') {
+                            // if (titleModal == 'Scan Done Media') {
                             Swal.fire({
                                 title: "Info !",
                                 text: "Please insert sample into instrument first",
@@ -406,26 +364,13 @@
                         $('#instrumentReader').css('display', 'block')
                     }
 
-                    const no_sample = data.no_sample.split("-")
-
                     $('#sampleReader').css('display', 'none')
                     $('#sampleData').css('display', 'block')
 
-                    $('#sampleType').val(data.type_testing.type)
+                    $('#noMediaValue').val(data.no_media)
+                    $('#namaMediaValue').val(data.media_name)
                     $('#sampleId').val(data.id)
-                    $('#sampleIDSection1').val(no_sample[0])
-                    $('#sampleIDSection2').val(no_sample[1])
-                    $('#sampleIDSection3').val(no_sample[2])
-                    $('#sampleIDSection4').val(no_sample[3])
-                    $('#sampleDesc').val(data.deskripsi_sample)
-                    $('#sampleNoBatch').val(data.no_batch)
-                    $('#sampleDateIn').val(data.tanggal_terima)
-                    $('#sampleParameterUji').val(data.parameter_testing.parameter_uji)
-
-                    if (data.parameter_testing.is_microba) {
-                        $('#methodInput').css("display", "block")
-                        $('#leadtimeInput').css("display", "block")
-                    }
+                    $('#leadtimeInput').css("display", "block")
 
                     QrCodeScannerSample.clear()
                 }
@@ -445,7 +390,7 @@
                 type: 'GET',
                 success: function(res) {
                     var data = res.data
-                    instrumentVar = data.id
+
                     $('#idInstrument').val(data.id)
                     $('#instrumentReader').css('display', 'none')
                     $('#instrumentID').val(data.id_instrument)
@@ -469,54 +414,15 @@
                     }
 
                     const titleModal = $('#scanInModalTitle').html()
-
-                    if (titleModal == 'Scan Done Sample') {
+                    if (titleModal == 'Scan Done Media') {
                         $('#scan_out_button').css('display', 'none')
                         $('#scan_done_button').css('display', 'block')
                     } else if (titleModal == 'Scan In Sample') {
                         $('#temperatureInput').css('display', 'block')
                         $('#replicationInput').css('display', 'block')
-                    } else if (titleModal === 'Scan Out Sample') {
-                        $('#scan_in_button').css('display', 'none')
-                        $('#scan_out_button').css('display', 'block')
                     }
-                    console.log(data.id)
-                    getReplication(data.id, $('#sampleId').val(), 'sample')
-                }
-            });
-        }
 
-        function getReplication(instrumentID, sampleID, type) {
-            $('.tag-input').select2({
-                tags: true,
-                ajax: {
-                    url: '/analytic/replication', // URL to fetch existing tags
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return {
-                            q: params.term,
-                            sampleID: sampleID,
-                            instrumentID: instrumentID,
-                            type: type
-                        };
-                    },
-                    processResults: function(data) {
-                        return {
-                            results: $.map(data, function(item) {
-                                return {
-                                    id: item,
-                                    text: item
-                                };
-                            })
-                        };
-                    },
-                    cache: true
-                },
-                placeholder: 'Add or select replication',
-                minimumInputLength: 1,
-                maximumSelectionLength: 1,
-                width: '100%'
+                }
             });
         }
 
@@ -526,16 +432,11 @@
             sampleIdVar = sampleId;
             instrumentVar = instrumentId;
 
-            $('#scanInModalTitle').html('Scan Out Sample')
+            $('#scanInModalTitle').html('Scan Out Media')
         }
 
-        function scanDoneSample(sampleId, instrumentId, replication) {
-            method = 'scan_done';
-            replicationVar = replication
-            sampleIdVar = sampleId;
-            instrumentVar = instrumentId;
-
-            $('#scanInModalTitle').html('Scan Done Sample')
+        function scanDoneSample(id) {
+            $('#scanInModalTitle').html('Scan Done Media')
         }
 
         $('#scanInModal').on("hidden.bs.modal", function() {
